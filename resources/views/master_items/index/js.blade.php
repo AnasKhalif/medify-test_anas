@@ -11,7 +11,9 @@
     $(document).ready(function() {
         $('#table').DataTable({
             searching: false,
-            order: [[0, 'desc']],
+            order: [
+                [0, 'desc']
+            ],
         });
         getData()
     });
@@ -20,8 +22,8 @@
         getData()
     })
 
-    function getData(){
-        
+    function getData() {
+
         $('#loading-filter').show();
         var dataTableObj = $('#table').DataTable();
         var filter_kode = $('#filter-kode').val()
@@ -31,11 +33,12 @@
         dataTableObj.clear().draw();
 
         $.ajax({
-            url: '{{url("master-items/search")}}',
+            url: '{{ url('master-items/search') }}',
             dataType: 'json',
             tryCount: 0,
             retryLimit: 3,
-            data: 'kode=' + filter_kode + '&nama=' + filter_nama + '&hargamin=' + filter_harga_min + '&hargamax=' + filter_harga_max,
+            data: 'kode=' + filter_kode + '&nama=' + filter_nama + '&hargamin=' + filter_harga_min +
+                '&hargamax=' + filter_harga_max,
             success: function(results) {
                 var data = results.data
 
@@ -45,16 +48,29 @@
                     harga_jual = Math.round(harga_jual)
                     var kode = item.kode;
 
-                    var html = `<a href="{{url('master-items/view/')}}/` + kode + `" class="btn btn-primary">View</a>`
+                    var html = `<a href="{{ url('master-items/view/') }}/` + kode +
+                        `" class="btn btn-primary">View</a>`
 
-                    $.each(item, function(obj_name, obj_value) {
-                        if (obj_name == 'laba') return false;
-                        array_temp.push(obj_value)
-                    })
-                    array_temp.push(harga_jual)
-                    array_temp.push(item.supplier)
-                    array_temp.push(html)
+                    // Add kode and nama
+                    array_temp.push(item.kode);
+                    array_temp.push(item.nama);
 
+                    // Add image
+                    if (item.image) {
+                        var imageHtml = `<img src="{{ asset('storage/') }}/` + item.image +
+                            `" alt="` + item.nama +
+                            `" style="width: 50px; height: 50px; object-fit: cover;">`;
+                        array_temp.push(imageHtml);
+                    } else {
+                        array_temp.push('<span class="text-muted">No Image</span>');
+                    }
+
+                    // Add remaining fields
+                    array_temp.push(item.jenis);
+                    array_temp.push(item.harga_beli);
+                    array_temp.push(harga_jual);
+                    array_temp.push(item.supplier);
+                    array_temp.push(html);
 
                     dataTableObj.row.add(array_temp).draw(true);
                 });
