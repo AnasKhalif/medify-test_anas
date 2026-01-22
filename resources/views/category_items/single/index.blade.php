@@ -28,6 +28,9 @@
                                 <td>{{ $category->created_at->format('d/m/Y H:i') }}</td>
                             </tr>
                         </table>
+                        <a href="{{ url('category-items/export-pdf/' . $category->id) }}" class="btn btn-danger">
+                            <i class="bi bi-file-pdf"></i> Download PDF
+                        </a>
                     </div>
                 </div>
 

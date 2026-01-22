@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CategoryItem;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CategoryItemsController extends Controller
 {
@@ -50,6 +51,19 @@ class CategoryItemsController extends Controller
         $data['category'] = $category;
         $data['masterItems'] = $category->masterItems;
         return view('category_items.single.index', $data);
+    }
+
+    public function exportPdf($id)
+    {
+        $category = CategoryItem::with('masterItems')->find($id);
+        $data = [
+            'category' => $category,
+            'masterItems' => $category->masterItems,
+            'printDate' => now()->format('d/m/Y H:i:s')
+        ];
+
+        $pdf = Pdf::loadView('category_items.pdf', $data);
+        return $pdf->download('kategori-' . $category->kode . '.pdf');
     }
 
     public function formSubmit(Request $request, $method, $id = 0)
