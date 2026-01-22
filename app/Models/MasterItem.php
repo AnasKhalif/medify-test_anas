@@ -12,4 +12,9 @@ class MasterItem extends Model
     use SoftDeletes;
 
     protected $fillable = ['nama', 'kode', 'harga_beli', 'laba', 'supplier', 'jenis', 'image', 'category_items_id'];
+
+    public function categoryItem()
+    {
+        return $this->belongsTo(CategoryItem::class, 'category_items_id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MasterItem;
+use App\Models\CategoryItem;
 use Illuminate\Http\Request;
 
 class MasterItemsController extends Controller
@@ -26,12 +27,27 @@ class MasterItemsController extends Controller
         if (!empty($hargamin)) $data_search = $data_search->where('harga_beli', '>=', $hargamin);
         if (!empty($hargamax)) $data_search = $data_search->where('harga_beli', '<=', $hargamax);
 
-        $data_search = $data_search->select('kode', 'nama', 'jenis', 'harga_beli', 'laba', 'supplier', 'image')->orderBy('id')->get();
+        $data_search = $data_search->with('categoryItem')
+            ->select('id', 'kode', 'nama', 'jenis', 'harga_beli', 'laba', 'supplier', 'image', 'category_items_id')
+            ->orderBy('id')
+            ->get();
 
+        $result = $data_search->map(function ($item) {
+            return [
+                'kode' => $item->kode,
+                'nama' => $item->nama,
+                'jenis' => $item->jenis,
+                'harga_beli' => $item->harga_beli,
+                'laba' => $item->laba,
+                'supplier' => $item->supplier,
+                'image' => $item->image,
+                'kategori' => $item->categoryItem ? $item->categoryItem->name : 'Tidak ada kategori'
+            ];
+        });
 
         return json_encode([
             'status' => 200,
-            'data' => $data_search
+            'data' => $result
         ]);
     }
 
@@ -44,12 +60,13 @@ class MasterItemsController extends Controller
         }
         $data['item'] = $item;
         $data['method'] = $method;
+        $data['categories'] = CategoryItem::orderBy('name')->get();
         return view('master_items.form.index', $data);
     }
 
     public function singleView($kode)
     {
-        $data['data'] = MasterItem::where('kode', $kode)->first();
+        $data['data'] = MasterItem::with('categoryItem')->where('kode', $kode)->first();
         return view('master_items.single.index', $data);
     }
 
@@ -77,6 +94,7 @@ class MasterItemsController extends Controller
         $data_item->kode = $kode;
         $data_item->supplier = $request->supplier;
         $data_item->jenis = $request->jenis;
+        $data_item->category_items_id = $request->category_items_id;
         $data_item->save();
 
         return redirect('master-items');

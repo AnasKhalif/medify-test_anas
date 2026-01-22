@@ -4,6 +4,7 @@
             <th>Kode</th>
             <th>Nama</th>
             <th>Image</th>
+            <th>Kategori</th>
             <th>Jenis</th>
             <th>Harga Beli</th>
             <th>Harga Jual</th>

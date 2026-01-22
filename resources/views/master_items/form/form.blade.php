@@ -67,6 +67,19 @@
         </select>
     </div>
 
+    @php $selectedCategory = $item->category_items_id ?? ''; @endphp
+    <div class="form-group">
+        <label>Kategori</label>
+        <select class="form-control" name="category_items_id">
+            <option value="">--Pilih Kategori--</option>
+            @foreach ($categories as $category)
+                <option value="{{ $category->id }}" @if ($selectedCategory == $category->id) selected @endif>
+                    {{ $category->name }} ({{ $category->kode }})
+                </option>
+            @endforeach
+        </select>
+    </div>
+
     <button class="btn btn-primary mt-3">Submit</button>
 
 </form>

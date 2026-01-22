@@ -65,6 +65,10 @@
                         array_temp.push('<span class="text-muted">No Image</span>');
                     }
 
+                    // Add kategori
+                    array_temp.push(item.kategori ||
+                        '<span class="text-muted">Tidak ada kategori</span>');
+
                     // Add remaining fields
                     array_temp.push(item.jenis);
                     array_temp.push(item.harga_beli);
